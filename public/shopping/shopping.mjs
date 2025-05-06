@@ -36,30 +36,108 @@ const PRODUCTS = [ // Imagine this data came in via the server
  * @return {HTMLElement} HTML element representing the product data
  */
 function renderProductCard(product) {
+    console.log("render product");
+    const article = document.createElement('article');
 
+    const img = document.createElement('img');
+    img.src = product.imageSrc;
+    img.alt = product.name;
+    article.appendChild(img);
+
+    const productDetails = document.createElement('div');
+    productDetails.className = 'product-details';
+    
+    const productName = document.createElement('h3');
+    productName.textContent = product.name;
+    productDetails.appendChild(productName);
+    
+    const description = document.createElement('p');
+    description.textContent = product.description;
+    productDetails.appendChild(description);
+    
+    const price = document.createElement('p');
+    price.className = 'price';
+    price.textContent = `$${product.price}`;
+    productDetails.appendChild(price);
+    
+    const buttonDiv = document.createElement('div');
+    
+    const buyButton = document.createElement('button');
+    buyButton.className = 'buy-button';
+    buyButton.textContent = 'Add to cart';
+    
+    buyButton.addEventListener('click', () => {
+        product.numInCart += 1;
+        
+        rerenderAllProducts();
+        rerenderCart();
+    });
+    
+    buttonDiv.appendChild(buyButton);
+    
+    if (product.numInCart > 0) {
+        const numInCart = document.createElement('span');
+        numInCart.className = 'num-in-cart';
+        numInCart.textContent = `${product.numInCart} in cart`;
+        buttonDiv.appendChild(numInCart);
+    }
+    
+    productDetails.appendChild(buttonDiv);
+    article.appendChild(productDetails);
+    
+    return article;
 }
 
 /**
  * Recreates all product cards.
  */
 function rerenderAllProducts() {
-    /*
-    1. remove all <article>s
-    2. recreate them using the data in PRODUCTS
-    3. modify the re-creation so it uses shouldProductBeVisible() (details are near the bottom of the lab directions)
-
-    You can remove and recreate the heading element if it makes things easier.
-     */
+    const productListSection = document.querySelector('.product-list');
+    
+    const heading = productListSection.querySelector('h2');
+    
+    productListSection.innerHTML = '';
+    
+    productListSection.appendChild(heading);
+    
+    for (let product of PRODUCTS) {
+        if (shouldProductBeVisible(product)) {
+            const productCard = renderProductCard(product);
+            productListSection.appendChild(productCard);
+        }
+    }
 }
 
 /**
  * Recreates all cart panel info.
  */
 function rerenderCart() {
-    /*
-    1. remove all card items
-    2. recreate them and the remove buttons based off the data in PRODUCTS
-     */
+    const cartItemsContainer = document.querySelector('.cart-items');
+    
+    cartItemsContainer.innerHTML = '';
+    
+    for (let product of PRODUCTS) {
+        if (product.numInCart > 0) {
+            const productText = document.createElement('p');
+            productText.textContent = `${product.name} x${product.numInCart}`;
+            cartItemsContainer.appendChild(productText);
+            
+            const removeButton = document.createElement('button');
+            removeButton.className = 'remove-button';
+            removeButton.textContent = 'Remove';
+            
+            removeButton.addEventListener('click', () => {
+                if (product.numInCart > 0) {
+                    product.numInCart -= 1;
+                }
+                
+                rerenderAllProducts();
+                rerenderCart();
+            });
+            
+            cartItemsContainer.appendChild(removeButton);
+        }
+    }
 }
 
 const minPriceInput = document.querySelector("#minPrice");
@@ -71,5 +149,26 @@ const maxPriceInput = document.querySelector("#maxPrice");
  * @return {boolean} whether a product should be visible
  */
 function shouldProductBeVisible(product) {
-
+    const minPriceStr = minPriceInput.value;
+    const maxPriceStr = maxPriceInput.value;
+    
+    if (minPriceStr !== "" && product.price < parseFloat(minPriceStr)) {
+        return false;
+    }
+    
+    if (maxPriceStr !== "" && product.price > parseFloat(maxPriceStr)) {
+        return false;
+    }
+    return true;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    rerenderAllProducts();
+    rerenderCart();
+    
+    minPriceInput.addEventListener('change', rerenderAllProducts);
+    maxPriceInput.addEventListener('change', rerenderAllProducts);
+    
+    minPriceInput.addEventListener('input', rerenderAllProducts);
+    maxPriceInput.addEventListener('input', rerenderAllProducts);
+});
