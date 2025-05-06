@@ -1,7 +1,7 @@
 import { toHtmlElement } from './toHtmlElement.mjs';
 
 const navLinks = [
-  { href: "index.html", text: "Home" },
+  { href: "", text: "Home" },
   { href: "projects.html", text: "Projects" },
   { href: "hobbies.html", text: "Hobbies" }
 ];
