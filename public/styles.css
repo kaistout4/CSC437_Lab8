@@ -31,6 +31,75 @@ nav a {
     padding: 5px 10px;
 }
 
+.dark-mode-toggle {
+    display: flex;
+    align-items: center;
+    color: var(--color-text-inverted);
+    margin-right: 15px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.dark-mode-toggle input {
+    margin-right: 5px;
+}
+
+.menu-button {
+    display: none;
+    padding: 10px 15px;
+    background-color: transparent;
+    color: var(--color-text-inverted);
+    border: 2px solid var(--color-text-inverted);
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+@media (max-width: 800px) {
+    header {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        grid-template-rows: auto auto;
+        grid-template-areas: 
+            "title toggle button"
+            "nav nav nav";
+        align-items: center;
+    }
+    
+    header h1 {
+        grid-area: title;
+        text-align: left;
+    }
+    
+    nav {
+        grid-area: nav;
+        display: none;
+        margin-top: 15px;
+    }
+    
+    nav.visible {
+        display: grid;
+        grid-auto-flow: row;
+        gap: 8px;
+    }
+    
+    nav a {
+        display: block;
+        margin: 8px 0;
+    }
+    
+    .dark-mode-toggle {
+        grid-area: toggle;
+        margin-right: 10px;
+        justify-self: end;
+    }
+    
+    .menu-button {
+        grid-area: button;
+        display: block;
+    }
+}
+
 main {
     max-width: 800px;
     margin: 20px;

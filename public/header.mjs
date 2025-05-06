@@ -26,6 +26,17 @@ function createMenuButton() {
   return toHtmlElement(buttonHtml).firstElementChild;
 }
 
+function createDarkModeToggle() {
+  const toggleHtml = `
+    <label class="dark-mode-toggle">
+      <input type="checkbox" autocomplete="off" id="dark-mode-checkbox" />
+      Dark mode
+    </label>
+  `;
+  
+  return toHtmlElement(toggleHtml).firstElementChild;
+}
+
 function createHeader(title) {
   const headerHtml = `
     <header>
@@ -34,8 +45,24 @@ function createHeader(title) {
   `;
   
   const header = toHtmlElement(headerHtml).firstElementChild;
-  header.appendChild(createNavigation());
-  header.appendChild(createMenuButton());
+  const nav = createNavigation();
+  const darkModeToggle = createDarkModeToggle();
+  const menuButton = createMenuButton();
+  
+  header.appendChild(nav);
+  header.appendChild(darkModeToggle);
+  header.appendChild(menuButton);
+  
+  menuButton.addEventListener('click', () => {
+    console.log('Menu button clicked');
+    nav.classList.toggle('visible');
+  });
+
+  document.body.addEventListener('click', (event) => {
+    if (nav.classList.contains('visible') && !header.contains(event.target)) {
+      nav.classList.remove('visible');
+    }
+  });
   
   return header;
 }
@@ -60,4 +87,37 @@ document.addEventListener('DOMContentLoaded', () => {
   const header = createHeader(title);
   
   document.body.prepend(header);
+  
+  const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
+  
+  const loadDarkModeState = () => {
+    const darkModeEnabled = localStorage.getItem('darkModeEnabled');
+    
+    if (darkModeEnabled !== null) {
+      const isDarkMode = darkModeEnabled === "true";
+      
+      darkModeCheckbox.checked = isDarkMode;
+      
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+  };
+  
+  loadDarkModeState();
+  
+  darkModeCheckbox.addEventListener('change', () => {
+    const isDarkMode = darkModeCheckbox.checked;
+    console.log(`Dark mode toggled}`);
+    
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+    
+    localStorage.setItem('darkModeEnabled', isDarkMode.toString());
+  });
 });
